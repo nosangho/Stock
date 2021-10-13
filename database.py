@@ -1,27 +1,48 @@
-import sqlalchemy as db
+import psycopg2
 
-class Database():
-
+class Databases():
+    """ 데이터 베이스 접속을 위한 클래스 """
     def __init__(self):
-        self.engine = db.create_engine('postgresql://postgres:8121438n@nosangho.asuscomm.com:5432/stock')
+        self._db = psycopg2.connect(host="localhost", dbname="postgres", user="postgres", password="8121438n", port=5433)
+        self._cursor = self._db.cursor()
+    
+    def __del__(self):
+        self._db.close()
+        self._cursor.close()
 
-    def return_engine(self):
-        return self.engine
+    def execute(self, query, args={}):
+        self._cursor.execute(query, args)
+        row = self._cursor.fetchall()
+        return row
+
+    def commit(self):
+        self._cursor.commit()
 
 
-        # print("DB Instance created")
-"""
-    def saveData(self):
+class CRUD(Databases):
+    """ 
+    데이터 베이스 CRUD를 위한 클래스
+
+    엡데이트나 삭제는 DB프로그램을 활용하는 편이 나을것 같아 제외
+    Database Class를 상속받아 사용
+
+    : insertDB : 데이터 -> DB로 입력
+    : readDB : DB데이터 읽기
+    """
+    def insertDB(self, schema, table, column, data):
+        sql = f"INSERT INTO {schema}.{table}({column}) VALUES ({data});"
+        print(sql)
         try:
-            self.connection.execute(
-                "insert into basic.test(yyyymmdd, sCode, sName, per, roe, bps, profit, debt, pbr) values('{date}', '{code}', '{sname}', {per}, {roe}, {bps}, {profit}, {debt}, {pbr})".format(date=self.yyyymmdd, code=self.sCode, sname=self.sName, per=self.per, roe=self.roe, bps=self.bps, profit=self.profit, debt=self.debt, pbr=self.pbr)
-            )
-            print("{} finish".format(self.sName))
-        except TypeError:
-            pass
+            self._cursor.execute(sql)
+            self._db.commit()
+        except Exception as e:
+            print("insert DB error", e)
 
-    def loadData(self, query):
-        query_result = self.connection.excute(query)
-        df = query_result
-
-        return df"""
+    def readDB(self, schema, table, column):
+        sql = f"SELECT {column} from {schema}.{table}"
+        try:
+            self._cursor.execute(sql)
+            result = self._cursor.fetchall()
+        except Exception as e:
+            result = ("read DB error", e)
+        return result
