@@ -79,5 +79,7 @@ class GetData(object):
         df['y_macd'], df['y_macdsignal'], df['y_macdhist'] = talib.MACD(df['y_close'], fastperiod=12, slowperiod=26, signalperiod=9)
         df['ma5'] = talib.MA(df['Close'], timeperiod=5, matype=0)
         df['ma20'] = talib.MA(df['Close'], timeperiod=20, matype=0)
+        df['before_high'] = df['High'][-10:].max()
+        df['ts'] = df['before_high'] - (df['atr']*2)
         
         return df

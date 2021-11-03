@@ -14,7 +14,7 @@ def insert_chartdata(tickers):
 
     # data 생성
     data = GetData(tickers)
-    # df = data.history_data('2020-03-01', '2021-03-01')
+    #df = data.history_data('2021-06-01', '2021-10-11')
     df = data.oneday_data()
     
     # DB형식에 맞게 data 수정
@@ -47,9 +47,13 @@ def insert_chartdata(tickers):
         y_macdhist = round(row['y_macdhist'], 2)
         ma5 = round(row['ma5'], 2)
         ma20 = round(row['ma20'], 2)
+        before_high = round(row['before_high'])
+        ts = round(row['ts'], 2)
+
+
         data = [yyyymmdd, open, high, low, close, volume, ticker, y_close, atr,\
                 y_atr, macd, macdsignal, macdhist, y_macd, y_macdsignal, y_macdhist,\
-                ma5, ma20]
+                ma5, ma20, before_high, ts]
         data_str = ','.join(str(e) for e in data)
 
         # DB에 데이터 입력
@@ -57,5 +61,5 @@ def insert_chartdata(tickers):
 
 
 if __name__ == "__main__":
-    tickers = ['AAPL', 'NVDA', 'ASML', 'U', 'ABNB' 'DDOG', 'QQQ']
+    tickers = ['AAPL', 'NVDA', 'ASML', 'U', 'ABNB', 'DDOG', 'QQQ']
     insert_chartdata(tickers)
